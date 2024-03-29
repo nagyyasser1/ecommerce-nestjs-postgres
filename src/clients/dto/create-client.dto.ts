@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateClientDto {
   @IsString()
@@ -14,10 +20,15 @@ export class CreateClientDto {
   @IsEmail()
   email: string;
 
+  @IsOptional()
+  @IsBoolean()
+  verified: boolean;
+
   @IsString()
   @IsNotEmpty()
   password: string;
 
   @IsString()
+  @IsOptional()
   deviceToken: string;
 }

@@ -11,13 +11,17 @@ import { AdminsModule } from './admins/admins.module';
 import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { CategoriesModule } from './categories/categories.module';
+import { SizesModule } from './sizes/sizes.module';
+import { ColorsModule } from './colors/colors.module';
+import googleConfig from './config/google.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
-      load: [appConfig, cloudinaryConfig],
+      load: [appConfig, cloudinaryConfig, googleConfig],
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -36,6 +40,9 @@ import { ReviewsModule } from './reviews/reviews.module';
     ProductsModule,
     OrdersModule,
     ReviewsModule,
+    CategoriesModule,
+    SizesModule,
+    ColorsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

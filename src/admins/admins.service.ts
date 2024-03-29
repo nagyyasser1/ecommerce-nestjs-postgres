@@ -26,12 +26,21 @@ export class AdminsService {
     }
   }
 
-  async findOne(id: number): Promise<Admin | null> {
+  async findOneById(id: number): Promise<Admin | undefined> {
     try {
       return await this.adminRepo.findOneBy({ id });
     } catch (error) {
       console.log('Error finding Admin', error);
-      return null;
+      return undefined;
+    }
+  }
+
+  async findOneByEmail(email: string): Promise<Admin | undefined> {
+    try {
+      return await this.adminRepo.findOneBy({ email });
+    } catch (error) {
+      console.log('Error finding Admin', error);
+      return undefined;
     }
   }
 

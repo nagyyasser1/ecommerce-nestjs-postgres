@@ -30,4 +30,9 @@ export class Client {
     default: '',
   })
   deviceToken: string;
+
+  @Column({
+    default: false,
+  })
+  verified: boolean;
 }

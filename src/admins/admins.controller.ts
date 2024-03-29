@@ -9,7 +9,9 @@ import {
 } from '@nestjs/common';
 import { AdminsService } from './admins.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('admins')
 @Controller('admins')
 export class AdminsController {
   constructor(private readonly adminsService: AdminsService) {}
@@ -27,6 +29,6 @@ export class AdminsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.adminsService.findOne(+id);
+    return this.adminsService.findOneById(+id);
   }
 }

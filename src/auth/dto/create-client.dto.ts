@@ -1,6 +1,12 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
-export class CreateAdminDto {
+export class CreateClientDto {
   @IsString()
   @IsNotEmpty()
   fname: string;
@@ -17,6 +23,10 @@ export class CreateAdminDto {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @IsOptional()
+  @IsBoolean()
+  verified: boolean;
 
   @IsString()
   @IsOptional()

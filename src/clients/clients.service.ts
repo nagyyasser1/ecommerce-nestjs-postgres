@@ -16,7 +16,7 @@ export class ClientsService {
     newClient.lname = createClientDto.lname;
     newClient.email = createClientDto.email;
     newClient.password = createClientDto.password;
-
+    newClient.verified = createClientDto.verified || false;
     newClient.deviceToken = createClientDto.deviceToken || '';
 
     try {
@@ -27,12 +27,21 @@ export class ClientsService {
     }
   }
 
-  async findOne(id: number): Promise<Client | null> {
+  async findOneById(id: number): Promise<Client | undefined> {
     try {
       return await this.ClientRepo.findOneBy({ id });
     } catch (error) {
       console.log('Error finding Client', error);
-      return null;
+      return undefined;
+    }
+  }
+
+  async findOneByEmail(email: string): Promise<Client | undefined> {
+    try {
+      return await this.ClientRepo.findOneBy({ email });
+    } catch (error) {
+      console.log('Error finding Client', error);
+      return undefined;
     }
   }
 

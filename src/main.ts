@@ -27,10 +27,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('doc', app, document);
 
-  // running the server
   await app.listen(appConfigObj.port);
-
-  // log server url
   console.log(`server running via ${await app.getUrl()} url.`);
 }
 bootstrap();
