@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
 import { Repository } from 'typeorm';
 import { Client } from './entities/client.entity';
@@ -10,8 +10,17 @@ export class ClientsService {
     @InjectRepository(Client) private ClientRepo: Repository<Client>,
   ) {}
 
-  async create(createClientDto: CreateClientDto): Promise<Client | null> {
+  async create(createClientDto: CreateClientDto): Promise<Client | undefined> {
+    const existingClient = await this.findOneByEmail(createClientDto.email);
+
+    if (existingClient) {
+      throw new ConflictException(
+        `email: ${createClientDto.email}, aready exists!`,
+      );
+    }
+
     const newClient = new Client();
+
     newClient.fname = createClientDto.fname;
     newClient.lname = createClientDto.lname;
     newClient.email = createClientDto.email;
@@ -23,7 +32,8 @@ export class ClientsService {
       return await this.ClientRepo.save(newClient);
     } catch (error) {
       console.error('Error creating Client:', error);
-      return null;
+
+      return undefined;
     }
   }
 

@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerModule } from '@nestjs/swagger';
 import { swaggerConfig } from './config/swagger.config';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 interface appConfig {
   port: number;
@@ -12,11 +14,13 @@ interface appConfig {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
 
   // retrieve application configuration object
   const appConfigObj = configService.get<appConfig>('app');
+
+  app.useStaticAssets(join(__dirname, '..', 'public'));
 
   // Enable CORS
   app.enableCors({

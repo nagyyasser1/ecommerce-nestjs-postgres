@@ -1,4 +1,11 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+  MinLength,
+} from 'class-validator';
 
 export class CreateAdminDto {
   @IsString()
@@ -14,8 +21,15 @@ export class CreateAdminDto {
   @IsEmail()
   email: string;
 
-  @IsString()
   @IsNotEmpty()
+  @MinLength(8)
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+    {
+      message:
+        'Password too weak. It must contain at least one lowercase letter, one uppercase letter, one digit, and one special character.',
+    },
+  )
   password: string;
 
   @IsString()

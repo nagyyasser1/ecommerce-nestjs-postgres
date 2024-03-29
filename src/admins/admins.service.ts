@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { Repository } from 'typeorm';
 import { Admin } from './entities/admin.entity';
@@ -9,6 +13,22 @@ export class AdminsService {
   constructor(@InjectRepository(Admin) private adminRepo: Repository<Admin>) {}
 
   async create(createAdminDto: CreateAdminDto): Promise<Admin | null> {
+    const adminCount = await this.adminRepo.count();
+
+    if (adminCount > 0) {
+      throw new BadRequestException(
+        'there are aready existing admin, contact with him!',
+      );
+    }
+
+    const existingAdmin = await this.findOneByEmail(createAdminDto.email);
+
+    if (existingAdmin) {
+      throw new ConflictException(
+        `email: ${createAdminDto.email}, aready exists!`,
+      );
+    }
+
     const newAdmin = new Admin();
     newAdmin.fname = createAdminDto.fname;
     newAdmin.lname = createAdminDto.lname;

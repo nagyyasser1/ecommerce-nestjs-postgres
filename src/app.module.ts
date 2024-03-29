@@ -14,6 +14,7 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { CategoriesModule } from './categories/categories.module';
 import { SizesModule } from './sizes/sizes.module';
 import { ColorsModule } from './colors/colors.module';
+import { UploadModule } from './upload/upload.module';
 import googleConfig from './config/google.config';
 
 @Module({
@@ -43,6 +44,7 @@ import googleConfig from './config/google.config';
     CategoriesModule,
     SizesModule,
     ColorsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
