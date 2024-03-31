@@ -3,21 +3,21 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { AdminGuard } from 'src/admins/guard/admin.guard';
 
-@ApiTags('categories')
-@Controller('categories')
+@ApiTags('category')
+@Controller('category')
 @UseGuards(AdminGuard)
+@UsePipes(ValidationPipe)
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
@@ -33,15 +33,7 @@ export class CategoriesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.categoriesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateCategoryDto: UpdateCategoryDto,
-  ) {
-    return this.categoriesService.update(+id, updateCategoryDto);
+    return this.categoriesService.findOneById(+id);
   }
 
   @Delete(':id')

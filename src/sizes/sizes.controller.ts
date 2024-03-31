@@ -3,17 +3,21 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { SizesService } from './sizes.service';
 import { CreateSizeDto } from './dto/create-size.dto';
-import { UpdateSizeDto } from './dto/update-size.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AdminGuard } from 'src/admins/guard/admin.guard';
 
-@ApiTags('sizes')
-@Controller('sizes')
+@ApiTags('size')
+@Controller('size')
+@UseGuards(AdminGuard)
+@UsePipes(ValidationPipe)
 export class SizesController {
   constructor(private readonly sizesService: SizesService) {}
 
@@ -29,12 +33,7 @@ export class SizesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.sizesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSizeDto: UpdateSizeDto) {
-    return this.sizesService.update(+id, updateSizeDto);
+    return this.sizesService.findOneById(+id);
   }
 
   @Delete(':id')

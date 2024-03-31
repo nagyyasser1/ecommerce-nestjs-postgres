@@ -8,12 +8,20 @@ import {
   ParseFilePipe,
   Post,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UploadService } from './upload.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
+import { AdminGuard } from 'src/admins/guard/admin.guard';
 
+@ApiTags('upload')
 @Controller('upload')
+@UseGuards(AdminGuard)
+@UsePipes(ValidationPipe)
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 

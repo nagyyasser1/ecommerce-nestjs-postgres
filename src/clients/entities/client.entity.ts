@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Review } from 'src/reviews/entities/review.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Client {
@@ -35,4 +36,9 @@ export class Client {
     default: false,
   })
   verified: boolean;
+
+  @OneToMany(() => Review, (review) => review.client, {
+    cascade: true,
+  })
+  reviews: Review[];
 }

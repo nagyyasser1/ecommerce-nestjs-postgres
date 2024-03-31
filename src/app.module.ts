@@ -13,8 +13,9 @@ import { OrdersModule } from './orders/orders.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { CategoriesModule } from './categories/categories.module';
 import { SizesModule } from './sizes/sizes.module';
-import { ColorsModule } from './colors/colors.module';
 import { UploadModule } from './upload/upload.module';
+import { ColorModule } from './color/color.module';
+import { VariantsModule } from './variants/variants.module';
 import googleConfig from './config/google.config';
 
 @Module({
@@ -43,8 +44,9 @@ import googleConfig from './config/google.config';
     ReviewsModule,
     CategoriesModule,
     SizesModule,
-    ColorsModule,
     UploadModule,
+    ColorModule,
+    VariantsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
