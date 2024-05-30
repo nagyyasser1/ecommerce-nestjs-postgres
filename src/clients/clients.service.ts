@@ -3,6 +3,7 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { Repository } from 'typeorm';
 import { Client } from './entities/client.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Admin } from 'src/admins/entities/admin.entity';
 
 @Injectable()
 export class ClientsService {
@@ -26,13 +27,11 @@ export class ClientsService {
     newClient.email = createClientDto.email;
     newClient.password = createClientDto.password;
     newClient.verified = createClientDto.verified || false;
-    newClient.deviceToken = createClientDto.deviceToken || '';
 
     try {
       return await this.ClientRepo.save(newClient);
     } catch (error) {
       console.error('Error creating Client:', error);
-
       return undefined;
     }
   }
@@ -61,5 +60,9 @@ export class ClientsService {
     } catch (error) {
       console.log('Error finding Clients: ', error);
     }
+  }
+
+  async update(client: Client | Admin): Promise<Client> {
+    return await this.ClientRepo.save(client);
   }
 }

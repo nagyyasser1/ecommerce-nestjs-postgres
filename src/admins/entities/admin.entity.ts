@@ -29,5 +29,5 @@ export class Admin {
   @Column({
     default: '',
   })
-  deviceToken: string;
+  verifyToken: string;
 }

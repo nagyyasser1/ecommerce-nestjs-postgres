@@ -17,6 +17,7 @@ import { UploadModule } from './upload/upload.module';
 import { ColorModule } from './color/color.module';
 import { VariantsModule } from './variants/variants.module';
 import googleConfig from './config/google.config';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -35,6 +36,18 @@ import googleConfig from './config/google.config';
       autoLoadEntities: true,
       synchronize: process.env.NODE_ENV === 'development',
       logging: false,
+    }),
+    MailerModule.forRoot({
+      transport: {
+        service: 'gmail',
+        host: String(process.env.MAIL_HOST),
+        port: Number(process.env.MAIL_PORT),
+        secure: true,
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
+        },
+      },
     }),
     AuthModule,
     ClientsModule,

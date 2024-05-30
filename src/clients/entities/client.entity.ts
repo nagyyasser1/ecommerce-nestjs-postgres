@@ -30,7 +30,7 @@ export class Client {
   @Column({
     default: '',
   })
-  deviceToken: string;
+  verifyToken: string;
 
   @Column({
     default: false,

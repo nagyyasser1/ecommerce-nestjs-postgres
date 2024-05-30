@@ -7,6 +7,7 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 import { Repository } from 'typeorm';
 import { Admin } from './entities/admin.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Client } from 'src/clients/entities/client.entity';
 
 @Injectable()
 export class AdminsService {
@@ -15,11 +16,11 @@ export class AdminsService {
   async create(createAdminDto: CreateAdminDto): Promise<Admin | null> {
     const adminCount = await this.adminRepo.count();
 
-    if (adminCount > 0) {
-      throw new BadRequestException(
-        'there are aready existing admin, contact with him!',
-      );
-    }
+    // if (adminCount > 0) {
+    //   throw new BadRequestException(
+    //     'there are aready existing admin, contact with him!',
+    //   );
+    // }
 
     const existingAdmin = await this.findOneByEmail(createAdminDto.email);
 
@@ -34,8 +35,6 @@ export class AdminsService {
     newAdmin.lname = createAdminDto.lname;
     newAdmin.email = createAdminDto.email;
     newAdmin.password = createAdminDto.password;
-
-    newAdmin.deviceToken = createAdminDto.deviceToken || '';
 
     try {
       const savedAdmin = await this.adminRepo.save(newAdmin);
@@ -70,5 +69,9 @@ export class AdminsService {
     } catch (error) {
       console.log('Error finding admins: ', error);
     }
+  }
+
+  async update(admin: Admin | Client): Promise<Admin> {
+    return await this.adminRepo.save(admin);
   }
 }

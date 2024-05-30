@@ -5,8 +5,9 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { swaggerConfig } from './config/swagger.config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import * as cookieParser from 'cookie-parser';
 
-interface appConfig {
+interface AppConfig {
   port: number;
   cors: {
     origin: string;
@@ -18,14 +19,17 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   // retrieve application configuration object
-  const appConfigObj = configService.get<appConfig>('app');
+  const appConfigObj = configService.get<AppConfig>('app');
 
   app.useStaticAssets(join(__dirname, '..', 'public'));
 
   // Enable CORS
   app.enableCors({
-    origin: appConfigObj.cors.origin,
+    origin: appConfigObj.cors.origin, // Set your frontend URL here
+    credentials: true, // Allow credentials (cookies)
   });
+
+  app.use(cookieParser());
 
   // configure swagger
   const document = SwaggerModule.createDocument(app, swaggerConfig);
