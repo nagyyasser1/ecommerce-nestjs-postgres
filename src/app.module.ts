@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import appConfig from './config/app.config';
-import cloudinaryConfig from './config/cloudinary.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { ClientsModule } from './clients/clients.module';
@@ -13,18 +12,18 @@ import { OrdersModule } from './orders/orders.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { CategoriesModule } from './categories/categories.module';
 import { SizesModule } from './sizes/sizes.module';
-import { UploadModule } from './upload/upload.module';
 import { ColorModule } from './color/color.module';
 import { VariantsModule } from './variants/variants.module';
 import googleConfig from './config/google.config';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
-      load: [appConfig, cloudinaryConfig, googleConfig],
+      load: [appConfig, googleConfig],
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -57,9 +56,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
     ReviewsModule,
     CategoriesModule,
     SizesModule,
-    UploadModule,
     ColorModule,
     VariantsModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

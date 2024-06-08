@@ -105,7 +105,6 @@ export class AuthController {
 
   @Get('refresh')
   async refreshToken(@Cookies('refreshToken') refreshToken: string) {
-    console.log(refreshToken);
     if (!refreshToken) {
       throw new UnauthorizedException('No refresh token provided');
     }
