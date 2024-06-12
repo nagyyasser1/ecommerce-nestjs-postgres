@@ -8,11 +8,14 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  Put,
+  Patch,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AdminGuard } from 'src/admins/guard/admin.guard';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @ApiTags('category')
 @Controller('category')
@@ -39,5 +42,13 @@ export class CategoriesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(+id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateCategoryDto: UpdateCategoryDto,
+  ) {
+    return this.categoriesService.update(+id, updateCategoryDto);
   }
 }

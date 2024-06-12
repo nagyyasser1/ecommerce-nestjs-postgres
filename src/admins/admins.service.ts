@@ -16,11 +16,11 @@ export class AdminsService {
   async create(createAdminDto: CreateAdminDto): Promise<Admin | null> {
     const adminCount = await this.adminRepo.count();
 
-    // if (adminCount > 0) {
-    //   throw new BadRequestException(
-    //     'there are aready existing admin, contact with him!',
-    //   );
-    // }
+    if (adminCount > 0) {
+      throw new BadRequestException(
+        'there are aready existing admin, contact with him!',
+      );
+    }
 
     const existingAdmin = await this.findOneByEmail(createAdminDto.email);
 

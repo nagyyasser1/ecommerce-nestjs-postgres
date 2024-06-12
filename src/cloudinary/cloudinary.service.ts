@@ -78,4 +78,22 @@ export class CloudinaryService {
       throw new Error(`Failed to delete folder: ${error.message}`);
     }
   }
+
+  async getImagesFromAllFolders(random: boolean = false): Promise<any[]> {
+    try {
+      const result = await cloudinary.api.resources({
+        type: 'upload',
+        max_results: 5,
+      });
+
+      let images = result.resources;
+      if (random) {
+        images = images.sort(() => 0.5 - Math.random());
+      }
+
+      return images.slice(0, 10);
+    } catch (error) {
+      throw new Error(`Failed to retrieve images: ${error.message}`);
+    }
+  }
 }

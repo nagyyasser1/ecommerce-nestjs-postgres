@@ -90,6 +90,7 @@ export class AuthService {
     }
 
     const payload = { sub: admin.id, email: admin.email, isAdmin: true };
+    console.log('payload from loginAdmin', payload);
 
     return {
       admin,
@@ -107,7 +108,11 @@ export class AuthService {
       const foundUser = await this.clientService.findOneByEmail(decoded.email);
 
       if (foundUser) {
-        const payload = { sub: decoded.id, email: decoded.email };
+        const payload = {
+          sub: decoded.id,
+          email: decoded.email,
+          isAdmin: false,
+        };
 
         return {
           accessToken: await this.jwtService.signAsync(payload),
@@ -117,7 +122,11 @@ export class AuthService {
       const foundAdmin = await this.adminService.findOneByEmail(decoded.email);
 
       if (foundAdmin) {
-        const payload = { sub: decoded.id, email: decoded.email };
+        const payload = {
+          sub: decoded.id,
+          email: decoded.email,
+          isAdmin: true,
+        };
 
         return {
           accessToken: await this.jwtService.signAsync(payload),

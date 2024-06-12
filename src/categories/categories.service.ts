@@ -7,6 +7,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -29,6 +30,11 @@ export class CategoriesService {
 
     const newCategory = new Category();
     newCategory.name = createCategoryDto.name;
+    newCategory.slug = createCategoryDto.slug;
+    newCategory.description = createCategoryDto.description;
+    newCategory.metaDescription = createCategoryDto.metaDescription;
+    newCategory.pageTitle = createCategoryDto.pageTitle;
+    newCategory.picUrl = createCategoryDto.picUrl;
 
     try {
       return await this.categoryRepo.save(newCategory);
@@ -62,5 +68,24 @@ export class CategoriesService {
 
   async remove(id: number) {
     return await this.categoryRepo.delete({ id });
+  }
+
+  async update(
+    id: number,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<Category | undefined> {
+    const existingCategory = await this.findOneById(id);
+    if (!existingCategory) {
+      throw new NotFoundException(`Category: '${id}' not found!`);
+    }
+
+    const updatedCategory = Object.assign(existingCategory, updateCategoryDto);
+
+    try {
+      return await this.categoryRepo.save(updatedCategory);
+    } catch (error) {
+      console.log('Error while updating Category!', error);
+      return undefined;
+    }
   }
 }

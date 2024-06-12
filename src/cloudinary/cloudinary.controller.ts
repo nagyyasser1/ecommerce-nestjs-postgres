@@ -49,4 +49,9 @@ export class CloudinaryController {
   async getImagesInFolder(@Param('folderName') folderName: string) {
     return this.cloudinaryService.getAllFilesInFolder(folderName);
   }
+
+  @Get('images')
+  async getImages(@Param('random') random: boolean) {
+    return this.cloudinaryService.getImagesFromAllFolders(random);
+  }
 }
