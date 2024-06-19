@@ -4,19 +4,16 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import appConfig from './config/app.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from './auth/auth.module';
-import { ClientsModule } from './clients/clients.module';
-import { AdminsModule } from './admins/admins.module';
-import { ProductsModule } from './products/products.module';
-import { OrdersModule } from './orders/orders.module';
-import { ReviewsModule } from './reviews/reviews.module';
-import { CategoriesModule } from './categories/categories.module';
-import { SizesModule } from './sizes/sizes.module';
-import { ColorModule } from './color/color.module';
-import { VariantsModule } from './variants/variants.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { ClientsModule } from './modules/clients/clients.module';
+import { AdminsModule } from './modules/admins/admins.module';
+import { ProductsModule } from './modules/products/products.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { ReviewsModule } from './modules/reviews/reviews.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 import googleConfig from './config/google.config';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -55,9 +52,6 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     OrdersModule,
     ReviewsModule,
     CategoriesModule,
-    SizesModule,
-    ColorModule,
-    VariantsModule,
     CloudinaryModule,
   ],
   controllers: [AppController],
