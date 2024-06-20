@@ -33,20 +33,26 @@ export class ProductsService {
     return await this.productRepository.save(product);
   }
 
-  async findAll({
-    page,
-    limit,
-  }: {
-    page: number;
-    limit: number;
-  }): Promise<Product[]> {
+  async findAll(
+    page: number,
+    limit: number,
+    categoryId?: number,
+  ): Promise<Product[]> {
     const offset = (page - 1) * limit;
-    return await this.productRepository.find({
-      relations: ['category'],
-      skip: offset,
-      take: limit,
-    });
+
+    const query = this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .skip(offset)
+      .take(limit);
+
+    if (categoryId) {
+      query.where('product.categoryId = :categoryId', { categoryId });
+    }
+    const products = await query.getMany();
+    return products;
   }
+
   async findOneById(id: number): Promise<Product> {
     const product = await this.productRepository.findOne({
       where: { id },
