@@ -10,23 +10,23 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/modules/auth/guard/auth.guard';
+import { OrderService } from './orders.service';
 
 @ApiTags('orders')
 @Controller('orders')
 @UseGuards(AuthGuard)
 @UsePipes(ValidationPipe)
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrderService) {}
 
-  // @Post()
-  // create(@Body() createOrderDto: CreateOrderDto) {
-  //   return this.ordersService.create(createOrderDto);
-  // }
+  @Post()
+  create(@Body() createOrderDto: CreateOrderDto) {
+    return this.ordersService.createOrder(createOrderDto);
+  }
 
   // @Get()
   // findAll() {

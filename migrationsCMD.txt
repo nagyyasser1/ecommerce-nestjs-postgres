@@ -1,0 +1,6 @@
+npm run typeorm -- migration:generate src/migrations/InitialMigration -d ./data-source.ts
+
+
+-------------
+
+npm run npm run typeorm:migrate

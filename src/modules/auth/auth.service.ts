@@ -194,7 +194,7 @@ export class AuthService {
     if (user instanceof Client) {
       await this.clientService.update(user);
     } else {
-      await this.adminService.update(user);
+      await this.adminService.update(user.id, user);
     }
   }
 
@@ -242,7 +242,7 @@ export class AuthService {
     if (user instanceof Client) {
       await this.clientService.update(user);
     } else {
-      await this.adminService.update(user);
+      await this.adminService.update(user.id, user);
     }
   }
 

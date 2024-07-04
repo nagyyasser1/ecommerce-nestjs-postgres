@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import appConfig from './config/app.config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { ClientsModule } from './modules/clients/clients.module';
 import { AdminsModule } from './modules/admins/admins.module';
@@ -14,6 +13,9 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import googleConfig from './config/google.config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -28,10 +30,14 @@ import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
       port: parseInt(process.env.DB_PORT, 10) || 5432,
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
+      database: process.env.DB_NAME,
+      entities: [join(__dirname, '**', '*.entity.{ts,js}')],
+      migrations: [join(__dirname, 'migrations', '*.{ts,js}')],
       autoLoadEntities: true,
       synchronize: process.env.NODE_ENV === 'development',
       logging: false,
+      migrationsTableName: 'typeorm_migrations',
+      migrationsRun: false,
     }),
     MailerModule.forRoot({
       transport: {
@@ -53,6 +59,7 @@ import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
     ReviewsModule,
     CategoriesModule,
     CloudinaryModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

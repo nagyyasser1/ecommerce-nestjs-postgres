@@ -1,97 +1,74 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnprocessableEntityException,
-} from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
-import { DataSource, Repository } from 'typeorm';
-import { OrderItem } from './entities/orderItem.entity';
+import { Product } from '../products/entities/product.entity';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
-export class OrdersService {
+export class OrderService {
   constructor(
     @InjectRepository(Order)
-    private readonly orderRepository: Repository<Order>,
-    @InjectRepository(OrderItem)
-    private readonly orderItemRepository: Repository<OrderItem>,
-    private dataSource: DataSource,
+    private orderRepository: Repository<Order>,
+    @InjectRepository(Product)
+    private productRepository: Repository<Product>,
   ) {}
 
-  // async create(createOrderDto: CreateOrderDto): Promise<Order | null> {
-  //   const queryRunner = this.dataSource.createQueryRunner();
+  async createOrder(createOrderDto: CreateOrderDto): Promise<Order> {
+    const order = this.orderRepository.create(createOrderDto);
+    return await this.orderRepository.save(order);
+  }
 
-  //   try {
-  //     await queryRunner.connect();
-  //     await queryRunner.startTransaction();
+  private async updateProductVariants(
+    productVariants: {
+      productId: number;
+      variant: { color: string; size: number; quantity: number };
+    }[],
+  ) {
+    for (const item of productVariants) {
+      const product = await this.productRepository.findOne({
+        where: {
+          id: item.productId,
+        },
+      });
 
-  //     const newOrder = new Order();
-  //     newOrder.shipping_address = createOrderDto.address;
-  //     newOrder.contact = createOrderDto.contact;
+      if (product && product.variants) {
+        const variantIndex = product.variants.findIndex(
+          (v) => v.color === item.variant.color && v.size === item.variant.size,
+        );
 
-  //     const processedVariants = [];
+        if (variantIndex !== -1) {
+          product.variants[variantIndex].quantity -= item.variant.quantity;
+          if (product.variants[variantIndex].quantity < 0) {
+            product.variants[variantIndex].quantity = 0;
+          }
+        }
 
-  // for (const {
-  //   productId,
-  //   sizeId,
-  //   colorId,
-  //   quantity,
-  // } of createOrderDto.items) {
-  // Fetch and update variant within the transaction
-  // const existingVariant = await queryRunner.manager.findOne(Variant, {
-  //   where: {
-  //     product: { id: productId },
-  //     size: { id: sizeId },
-  //     color: { id: colorId },
-  //   },
-  //   relations: ['product'],
-  // });
-  // Validate variant existence and quantity
-  // if (!existingVariant) {
-  //   throw new BadRequestException('Invalid variant');
-  // }
-  // if (existingVariant.quantity < quantity) {
-  //   throw new BadRequestException('Insufficient quantity');
-  // }
-  // processedVariants.push({
-  //   variant: existingVariant,
-  //   quantity,
-  // });
-  // Update quantity immediately within the transaction
-  // await queryRunner.manager.update(Variant, existingVariant.id, {
-  //   quantity: existingVariant.quantity - quantity,
-  // });
-  // }
+        await this.productRepository.save(product);
+      }
+    }
+  }
 
-  // Create Order instance within the transaction
-  // const savedOrder = await queryRunner.manager.save(Order, newOrder);
+  async updateOrderStatus(
+    orderId: number,
+    status: 'pending' | 'processing' | 'completed' | 'cancelled',
+  ): Promise<Order> {
+    const order = await this.orderRepository.findOne({
+      where: {
+        id: orderId,
+      },
+    });
 
-  // Create OrderItems in a batch (if supported by repository)
-  // const orderItems = processedVariants.map((item) =>
-  //   this.orderItemRepository.create({
-  //     quantity: item.quantity,
-  //     variant: { id: item.variant.id },
-  //     order: { id: savedOrder.id },
-  //   }),
-  // );
-  // await queryRunner.manager.save(OrderItem, orderItems);
+    if (!order) {
+      throw new Error('Order not found');
+    }
 
-  //   await queryRunner.commitTransaction();
-  //   return savedOrder;
-  // } catch (error) {
-  //   await queryRunner.rollbackTransaction();
-  //   throw new UnprocessableEntityException(error.message);
-  // } finally {
-  //   await queryRunner.release();
-  // }
-  // }
+    if (order.status !== 'completed' && status === 'completed') {
+      // Update product variants when the order is completed
+      await this.updateProductVariants(order.variants);
+    }
 
-  // async findAll(): Promise<Order[]> {
-  //   return await this.orderRepository.find({
-  //     relations: [
-  //       'orderItems'
-  //     ],
-  //   });
-  // }
+    order.status = status;
+    return this.orderRepository.save(order);
+  }
 }
