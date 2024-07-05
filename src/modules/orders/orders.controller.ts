@@ -15,6 +15,8 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/modules/auth/guard/auth.guard';
 import { OrderService } from './orders.service';
+import { Client } from '../clients/decorators/client.decorator';
+import { Client as ClientEntity } from '../clients/entities/client.entity';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -24,15 +26,31 @@ export class OrdersController {
   constructor(private readonly ordersService: OrderService) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.createOrder(createOrderDto);
+  create(
+    @Body() createOrderDto: CreateOrderDto,
+    @Client() client: ClientEntity,
+  ) {
+    return this.ordersService.createOrder(createOrderDto, client);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.ordersService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.ordersService.findAll();
+  }
 
+  @Patch('cancel/:id')
+  cancelOrder(@Param('id') id: number, @Client() client) {
+    return this.ordersService.cancelOrder(id, client);
+  }
+
+  @Patch('status/:id')
+  updateOrderStatus(
+    @Param('id') id: number,
+    @Body('status') status: string,
+    @Client() client,
+  ) {
+    return this.ordersService.updateOrderStatus(id, status, client);
+  }
   // @Get(':id')
   // findOne(@Param('id') id: string) {
   //   return this.ordersService.findOne(+id);

@@ -23,7 +23,7 @@ class VariantDto {
   quantity: number;
 }
 
-class ProductVariantDto {
+export class ProductVariantDto {
   @IsNotEmpty()
   @IsNumber()
   productId: number;
@@ -57,14 +57,6 @@ class ShippingDetailsDto {
 }
 
 export class CreateOrderDto {
-  @IsNotEmpty()
-  @IsNumber()
-  totalAmount: number;
-
-  @IsNotEmpty()
-  @IsEnum(['pending', 'processing', 'shipped', 'completed', 'cancelled'])
-  status?: 'pending' | 'processing' | 'shipped' | 'completed' | 'cancelled';
-
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShippingDetailsDto)

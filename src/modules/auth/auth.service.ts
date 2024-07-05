@@ -62,7 +62,7 @@ export class AuthService {
       );
     }
 
-    const payload = { sub: client.id, email: client.email };
+    const payload = { id: client.id, email: client.email, isAdmin: false };
 
     return {
       client,
@@ -89,7 +89,7 @@ export class AuthService {
       throw new BadRequestException('Email or password not correct!');
     }
 
-    const payload = { sub: admin.id, email: admin.email, isAdmin: true };
+    const payload = { id: admin.id, email: admin.email, isAdmin: true };
 
     return {
       admin,
@@ -108,7 +108,7 @@ export class AuthService {
 
       if (foundUser) {
         const payload = {
-          sub: decoded.id,
+          id: decoded.id,
           email: decoded.email,
           isAdmin: false,
         };
@@ -122,7 +122,7 @@ export class AuthService {
 
       if (foundAdmin) {
         const payload = {
-          sub: decoded.id,
+          id: decoded.id,
           email: decoded.email,
           isAdmin: true,
         };

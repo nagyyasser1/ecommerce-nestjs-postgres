@@ -4,6 +4,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Client {
+  [x: string]: any;
   @PrimaryGeneratedColumn()
   id: number;
 
