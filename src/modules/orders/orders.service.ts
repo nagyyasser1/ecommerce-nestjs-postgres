@@ -8,8 +8,9 @@ import { Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
 import { Product } from '../products/entities/product.entity';
 import { CreateOrderDto, ProductVariantDto } from './dto/create-order.dto';
-import { Client } from '../clients/entities/client.entity';
-import { ClientsService } from '../clients/clients.service';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
+import { UserType } from 'src/shared/utils/enums';
 
 @Injectable()
 export class OrderService {
@@ -18,21 +19,21 @@ export class OrderService {
     private orderRepository: Repository<Order>,
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
-    private clientsService: ClientsService,
+    private usersService: UsersService,
   ) {}
 
   async createOrder(
     createOrderDto: CreateOrderDto,
-    client: Client,
+    user: User,
   ): Promise<Order> {
-    if (client.isAdmin) {
+    if (user.userType === UserType.ADMIN) {
       throw new BadRequestException('Admins cannot place orders.');
     }
 
-    const existingClient = await this.clientsService.findOneById(client.id);
+    const existinguser = await this.usersService.findOneById(user.id);
 
-    if (!existingClient) {
-      throw new NotFoundException('Client not found');
+    if (!existinguser) {
+      throw new NotFoundException('user not found');
     }
 
     const { shippingDetails, paymentMethod, variants, notes } = createOrderDto;
@@ -84,7 +85,7 @@ export class OrderService {
     }, 0);
 
     const order = this.orderRepository.create({
-      client: existingClient,
+      user,
       shippingDetails,
       paymentMethod,
       totalAmount,
@@ -100,17 +101,19 @@ export class OrderService {
     return await this.orderRepository.save(order);
   }
 
-  async cancelOrder(orderId: number, client: Client): Promise<Order> {
+  async cancelOrder(orderId: number, user: User): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: { id: orderId },
-      relations: ['client'],
+      relations: ['user'],
     });
 
     if (!order) {
       throw new NotFoundException('Order not found');
     }
 
-    if (order.client.id !== client.id && !client.isAdmin) {
+    let isAdmin = user.userType === UserType.ADMIN;
+
+    if (order.user.id !== user.id && !isAdmin) {
       throw new BadRequestException(
         'You are not authorized to cancel this order',
       );
@@ -163,18 +166,20 @@ export class OrderService {
   async updateOrderStatus(
     orderId: number,
     status: any,
-    client: Client,
+    user: User,
   ): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: { id: orderId },
-      relations: ['client'],
+      relations: ['user'],
     });
 
     if (!order) {
       throw new NotFoundException('Order not found');
     }
 
-    if (order.client?.id !== client?.id && !client.isAdmin) {
+    let isAdmin = user.userType === UserType.ADMIN;
+
+    if (order.user?.id !== user?.id && !isAdmin) {
       throw new BadRequestException(
         'You are not authorized to update this order',
       );

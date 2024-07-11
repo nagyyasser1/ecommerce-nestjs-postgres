@@ -7,7 +7,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 
-import { Client } from 'src/modules/clients/entities/client.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 
 @Entity()
 export class Order {
@@ -49,8 +49,8 @@ export class Order {
   @Column({ type: 'text', nullable: true })
   notes: string;
 
-  @ManyToOne(() => Client, (client) => client.orders)
-  client: Client;
+  @ManyToOne(() => User, (user) => user.orders)
+  user: User;
 
   @CreateDateColumn()
   createdAt: Date;

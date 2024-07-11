@@ -3,13 +3,14 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { ClientsService } from 'src/modules/clients/clients.service';
+import { UsersService } from 'src/modules/users/users.service';
+import { UserType } from 'src/shared/utils/enums';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
     private readonly configService: ConfigService,
-    private readonly clientsService: ClientsService,
+    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {
     super({
@@ -38,35 +39,28 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         family_name: lname,
       } = profile._json;
 
-      let client = await this.clientsService.findOneByEmail(email);
+      let user = await this.usersService.findOneByEmail(email);
 
-      if (!client) {
-        // create new client
-        client = await this.clientsService.create({
+      if (!user) {
+        // create new user
+        user = await this.usersService.create({
           fname,
           lname,
           email,
           deviceToken: '',
-          password: this.generateRandomPassword(6),
+          password: '',
+          authType: 'google',
           verified: email_verified,
+          phone: '0',
+          verifyToken: '',
+          userType: UserType.CLIENT,
         });
       }
 
-      return done(null, client);
+      return done(null, user);
     } catch (error) {
       console.error('Error during user validation:', error);
       return done(error, false);
     }
-  }
-
-  generateRandomPassword(length: number): string {
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
   }
 }

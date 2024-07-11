@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { jwtConstants } from 'src/modules/auth/constants';
+import { jwtConstants } from 'src/shared/utils/constants';
 
 @Injectable()
-export class AdminGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -24,15 +24,10 @@ export class AdminGuard implements CanActivate {
       });
 
       request['user'] = payload;
-
-      if (payload?.isAdmin === true) {
-        return true;
-      } else {
-        return false;
-      }
     } catch {
       throw new UnauthorizedException();
     }
+    return true;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

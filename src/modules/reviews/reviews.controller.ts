@@ -14,7 +14,7 @@ import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/modules/auth/guard/auth.guard';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @ApiTags('reviews')
 @Controller('reviews')

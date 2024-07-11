@@ -1,11 +1,9 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import appConfig from './config/app.config';
 import { AuthModule } from './modules/auth/auth.module';
-import { ClientsModule } from './modules/clients/clients.module';
-import { AdminsModule } from './modules/admins/admins.module';
 import { ProductsModule } from './modules/products/products.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
@@ -13,9 +11,10 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import googleConfig from './config/google.config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
-import { PaymentsModule } from './modules/payments/payments.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
+import { UsersModule } from './modules/users/users.module';
+import { AttachUserMiddleware } from './common/middlewares/attach-user.middleware';
 
 @Module({
   imports: [
@@ -52,16 +51,18 @@ import { join } from 'path';
       },
     }),
     AuthModule,
-    ClientsModule,
-    AdminsModule,
     ProductsModule,
     OrdersModule,
     ReviewsModule,
     CategoriesModule,
     CloudinaryModule,
-    PaymentsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AttachUserMiddleware).forRoutes('*');
+  }
+}

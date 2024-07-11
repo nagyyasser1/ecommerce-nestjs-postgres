@@ -11,12 +11,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/modules/auth/guard/auth.guard';
 import { OrderService } from './orders.service';
-import { Client } from '../clients/decorators/client.decorator';
-import { Client as ClientEntity } from '../clients/entities/client.entity';
+import { User as UserEntity } from '../users/entities/user.entity';
+import { User } from 'src/common/decorators/user.decoratos';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -26,10 +25,7 @@ export class OrdersController {
   constructor(private readonly ordersService: OrderService) {}
 
   @Post()
-  create(
-    @Body() createOrderDto: CreateOrderDto,
-    @Client() client: ClientEntity,
-  ) {
+  create(@Body() createOrderDto: CreateOrderDto, @User() client: UserEntity) {
     return this.ordersService.createOrder(createOrderDto, client);
   }
 
@@ -39,7 +35,7 @@ export class OrdersController {
   }
 
   @Patch('cancel/:id')
-  cancelOrder(@Param('id') id: number, @Client() client) {
+  cancelOrder(@Param('id') id: number, @User() client) {
     return this.ordersService.cancelOrder(id, client);
   }
 
@@ -47,7 +43,7 @@ export class OrdersController {
   updateOrderStatus(
     @Param('id') id: number,
     @Body('status') status: string,
-    @Client() client,
+    @User() client: UserEntity,
   ) {
     return this.ordersService.updateOrderStatus(id, status, client);
   }

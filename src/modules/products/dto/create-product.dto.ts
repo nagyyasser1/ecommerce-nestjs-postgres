@@ -57,7 +57,11 @@ export class CreateProductDto {
 
   @IsNumber()
   @IsNotEmpty()
-  category: number;
+  categoryId: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  subCategoryId: number;
 
   @IsOptional()
   @IsArray()

@@ -14,20 +14,34 @@ export class ProductsService {
     private readonly categoryService: CategoriesService,
   ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
-    const category = await this.categoryService.findOneById(
-      createProductDto.category,
+  async create(createProductDto: CreateProductDto) {
+    const category = await this.categoryService.findCategoryById(
+      createProductDto.categoryId,
     );
+
+    console.log(category);
 
     if (!category) {
       throw new NotFoundException(
-        `Category with ID ${createProductDto.category} not found`,
+        `Category with ID ${createProductDto.categoryId} not found`,
+      );
+    }
+
+    // to-do
+    const subCategory = await this.categoryService.findSubCategoryById(
+      createProductDto.subCategoryId,
+    );
+
+    if (!subCategory) {
+      throw new NotFoundException(
+        `Category with ID ${createProductDto.categoryId} not found`,
       );
     }
 
     const product = this.productRepository.create({
       ...createProductDto,
       category,
+      subCategory,
     });
 
     return await this.productRepository.save(product);
@@ -43,6 +57,7 @@ export class ProductsService {
     const query = this.productRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.subCategory', 'subCategory')
       .skip(offset)
       .take(limit);
 
@@ -76,13 +91,13 @@ export class ProductsService {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
 
-    if (updateProductDto.category) {
-      const category = await this.categoryService.findOneById(
-        updateProductDto.category,
+    if (updateProductDto.categoryId) {
+      const category = await this.categoryService.findCategoryById(
+        updateProductDto.categoryId,
       );
       if (!category) {
         throw new NotFoundException(
-          `Category with ID ${updateProductDto.category} not found`,
+          `Category with ID ${updateProductDto.categoryId} not found`,
         );
       }
       product.category = category;

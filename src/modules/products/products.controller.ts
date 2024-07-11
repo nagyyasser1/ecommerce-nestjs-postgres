@@ -15,7 +15,7 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { AdminGuard } from 'src/modules/admins/guard/admin.guard';
+import { AdminGuard } from 'src/common/guards/admin.guard';
 
 @ApiTags('products')
 @Controller('products')

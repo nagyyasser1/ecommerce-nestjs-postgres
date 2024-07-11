@@ -1,19 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { AdminsModule } from 'src/modules/admins/admins.module';
-import { ClientsModule } from 'src/modules/clients/clients.module';
-import { ClientsService } from 'src/modules/clients/clients.service';
-import { AdminsService } from 'src/modules/admins/admins.service';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
 import { PassportModule } from '@nestjs/passport';
 import { GoogleStrategy } from './passport/google.strategy';
+import { UsersModule } from '../users/users.module';
+import { UsersService } from '../users/users.service';
+import { jwtConstants } from 'src/shared/utils/constants';
 
 @Module({
   imports: [
-    AdminsModule,
-    ClientsModule,
+    UsersModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
@@ -22,6 +19,6 @@ import { GoogleStrategy } from './passport/google.strategy';
     PassportModule.register({ defaultStrategy: 'google' }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, ClientsService, AdminsService, GoogleStrategy],
+  providers: [UsersService, AuthService, GoogleStrategy],
 })
 export class AuthModule {}

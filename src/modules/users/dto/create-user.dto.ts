@@ -1,14 +1,16 @@
 import {
   IsBoolean,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   Matches,
   MinLength,
 } from 'class-validator';
+import { UserType } from 'src/shared/utils/enums';
 
-export class CreateClientDto {
+export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   fname: string;
@@ -17,14 +19,20 @@ export class CreateClientDto {
   @IsNotEmpty()
   lname: string;
 
-  @IsString()
-  @IsNotEmpty()
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
+  @IsString()
   @IsOptional()
+  phone: string;
+
   @IsBoolean()
+  @IsOptional()
   verified: boolean;
+
+  @IsOptional()
+  verifyToken: string;
 
   @IsNotEmpty()
   @MinLength(8)
@@ -40,4 +48,12 @@ export class CreateClientDto {
   @IsString()
   @IsOptional()
   deviceToken: string;
+
+  @IsString()
+  @IsOptional()
+  authType: string;
+
+  @IsEnum(UserType)
+  @IsNotEmpty()
+  userType: UserType;
 }

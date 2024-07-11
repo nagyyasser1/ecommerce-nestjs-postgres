@@ -8,14 +8,17 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
-  Put,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { AdminGuard } from 'src/modules/admins/guard/admin.guard';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { AdminGuard } from 'src/common/guards/admin.guard';
+import { Category } from './entities/category.entity';
+import { CreateSubcategoryDto } from './dto/create-subCategory.dto';
+import { SubCategory } from './entities/subCategory.entity';
 
 @ApiTags('category')
 @Controller('category')
@@ -25,30 +28,43 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoriesService.create(createCategoryDto);
+  createCategory(
+    @Body() createCategoryDto: CreateCategoryDto,
+  ): Promise<Category> {
+    return this.categoriesService.createCategory(createCategoryDto);
+  }
+
+  @Post('subCategory')
+  createSubCategory(
+    @Body() createSubCategoryDto: CreateSubcategoryDto,
+  ): Promise<SubCategory> {
+    return this.categoriesService.createSubCategory(createSubCategoryDto);
   }
 
   @Get()
-  findAll() {
-    return this.categoriesService.findAll();
+  findCategoriesWithItsSubCategories(): Promise<Category[]> {
+    return this.categoriesService.findCategoriesWithItsSubCategories();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoriesService.findOneById(+id);
+  findAllProductsByCategory(
+    @Param('id') categroyId: number,
+  ): Promise<Category[]> {
+    return this.categoriesService.findProductsByCategory(categroyId);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoriesService.remove(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateCategoryDto: UpdateCategoryDto,
+  @Get(':catId/:subId')
+  async findAllProductsByCategoryAndSubCategory(
+    @Param('catId') catId: number,
+    @Param('subId') subId: number,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
   ) {
-    return this.categoriesService.update(+id, updateCategoryDto);
+    return await this.categoriesService.findProductsByCategoryAndSubCategory(
+      catId,
+      subId,
+      page,
+      limit,
+    );
   }
 }

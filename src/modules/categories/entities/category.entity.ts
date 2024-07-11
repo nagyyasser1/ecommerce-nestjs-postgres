@@ -1,5 +1,6 @@
 import { Product } from 'src/modules/products/entities/product.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { SubCategory } from './subCategory.entity';
 
 @Entity()
 export class Category {
@@ -36,6 +37,9 @@ export class Category {
     nullable: false,
   })
   picUrl: string;
+
+  @OneToMany(() => SubCategory, (subCategory) => subCategory.category)
+  subCategories: SubCategory[];
 
   @OneToMany(() => Product, (product) => product.category)
   products: Product[];

@@ -7,12 +7,15 @@ import {
   Delete,
   Param,
   Get,
+  UseGuards,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from './cloudinary.service';
 import { multerOptions } from '../../config/multer.config';
+import { AdminGuard } from 'src/common/guards/admin.guard';
 
 @Controller('cloudinary')
+@UseGuards(AdminGuard)
 export class CloudinaryController {
   constructor(private readonly cloudinaryService: CloudinaryService) {}
 

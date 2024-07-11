@@ -7,18 +7,22 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { SubCategory } from './entities/subCategory.entity';
+import { CreateSubcategoryDto } from './dto/create-subCategory.dto';
 
 @Injectable()
 export class CategoriesService {
   constructor(
-    @InjectRepository(Category) private categoryRepo: Repository<Category>,
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
+    @InjectRepository(SubCategory)
+    private subCategoryRepository: Repository<SubCategory>,
   ) {}
 
-  async create(
+  async createCategory(
     createCategoryDto: CreateCategoryDto,
   ): Promise<Category | undefined> {
-    const existingCategory = await this.categoryRepo.findOneBy({
+    const existingCategory = await this.categoryRepository.findOneBy({
       name: createCategoryDto.name,
     });
 
@@ -37,55 +41,90 @@ export class CategoriesService {
     newCategory.picUrl = createCategoryDto.picUrl;
 
     try {
-      return await this.categoryRepo.save(newCategory);
+      return await this.categoryRepository.save(newCategory);
     } catch (error) {
       console.log('Error will creating new Category!.', error);
       return undefined;
     }
   }
 
-  async findAll(): Promise<Category[]> {
-    return await this.categoryRepo.find();
-  }
-
-  async findOneById(id: number): Promise<Category | null> {
-    const category = await this.categoryRepo.findOneBy({ id });
-    if (!category) {
-      throw new NotFoundException(`Category: '${id}' not found!`);
-    }
-
-    return category;
-  }
-
-  async findOneByName(name: string): Promise<Category | null> {
-    const category = await this.categoryRepo.findOneBy({ name });
+  async createSubCategory(
+    createSubcategoryDto: CreateSubcategoryDto,
+  ): Promise<SubCategory> {
+    const category = await this.categoryRepository.findOneBy({
+      id: createSubcategoryDto.categoryId,
+    });
 
     if (!category) {
-      throw new NotFoundException(`Category: '${name}' not found!`);
+      throw new NotFoundException(`Category id: ${category.id} not found`);
     }
-    return category;
+    const newSubCategory = new SubCategory();
+
+    newSubCategory.category = category;
+    newSubCategory.name = createSubcategoryDto.name;
+
+    return this.subCategoryRepository.save(newSubCategory);
   }
 
-  async remove(id: number) {
-    return await this.categoryRepo.delete({ id });
+  async findCategoriesWithItsSubCategories(): Promise<Category[]> {
+    return await this.categoryRepository.find({
+      relations: ['subCategories'],
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        subCategories: {
+          id: true,
+          name: true,
+        },
+      },
+    });
   }
 
-  async update(
-    id: number,
-    updateCategoryDto: UpdateCategoryDto,
-  ): Promise<Category | undefined> {
-    const existingCategory = await this.findOneById(id);
-    if (!existingCategory) {
-      throw new NotFoundException(`Category: '${id}' not found!`);
-    }
+  async findProductsByCategory(categoryId: number): Promise<Category[]> {
+    return await this.categoryRepository.find({
+      where: {
+        id: categoryId,
+      },
+      relations: ['products'],
+      select: {
+        name: true,
+        products: {
+          id: true,
+          name: true,
+        },
+      },
+    });
+  }
 
-    const updatedCategory = Object.assign(existingCategory, updateCategoryDto);
+  async findProductsByCategoryAndSubCategory(
+    categoryId: number,
+    subCategoryId: number,
+    page: number,
+    pageSize: number,
+  ) {
+    const [products, total] = await this.subCategoryRepository
+      .createQueryBuilder('subCategory')
+      .leftJoinAndSelect('subCategory.products', 'product')
+      .where('subCategory.id = :subCategoryId', { subCategoryId })
+      .andWhere('subCategory.category.id = :categoryId', { categoryId })
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getManyAndCount();
 
-    try {
-      return await this.categoryRepo.save(updatedCategory);
-    } catch (error) {
-      console.log('Error while updating Category!', error);
-      return undefined;
-    }
+    return {
+      products,
+      total,
+      currentPage: page,
+      totalPages: Math.ceil(total / pageSize),
+    };
+  }
+
+  async findCategoryById(id: number): Promise<Category> {
+    return await this.categoryRepository.findOneBy({ id });
+  }
+
+  async findSubCategoryById(id: number): Promise<SubCategory> {
+    return await this.subCategoryRepository.findOneBy({ id });
   }
 }

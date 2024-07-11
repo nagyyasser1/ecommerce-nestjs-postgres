@@ -6,34 +6,26 @@ import {
   UpdateEvent,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Admin } from './admin.entity';
+import { User } from './user.entity';
 
 @EventSubscriber()
-export class AdminSubscriber implements EntitySubscriberInterface<Admin> {
+export class UserSubscriber implements EntitySubscriberInterface<User> {
   constructor(dataSource: DataSource) {
     dataSource.subscribers.push(this);
   }
 
   listenTo() {
-    return Admin;
+    return User;
   }
 
-  async beforeInsert(event: InsertEvent<Admin>) {
-    // Validate Admin data before insert (optional)
+  async beforeInsert(event: InsertEvent<User>) {
     const saltOrRounds = 10;
     const password = event.entity.password;
 
     event.entity.password = await bcrypt.hash(password, saltOrRounds);
   }
 
-  async beforeUpdate(event: UpdateEvent<Admin>): Promise<any> {
-    const saltOrRounds = 10;
-    const password = event.entity.password;
-
-    event.entity.password = await bcrypt.hash(password, saltOrRounds);
-  }
-
-  async afterUpdate(event: UpdateEvent<Admin>) {
+  async afterUpdate(event: UpdateEvent<User>) {
     // Perform actions after user update (optional)
     // Example: send notification, sync cache
   }

@@ -1,4 +1,5 @@
 import { Category } from 'src/modules/categories/entities/category.entity';
+import { SubCategory } from 'src/modules/categories/entities/subCategory.entity';
 import { Review } from 'src/modules/reviews/entities/review.entity';
 import {
   Column,
@@ -52,7 +53,10 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.products)
   category: Category;
 
-  @OneToMany(() => Review, (review) => review.client, {
+  @ManyToOne(() => SubCategory, (subCategory) => subCategory.products)
+  subCategory: SubCategory;
+
+  @OneToMany(() => Review, (review) => review.user, {
     cascade: true,
   })
   reviews: Review[];
