@@ -47,6 +47,11 @@ export class CategoriesController {
   }
 
   @Get(':id')
+  findCategoryWithItsSubCategories(@Param('id') id: string): Promise<Category> {
+    return this.categoriesService.findCategoryWithItsSubCategories(+id);
+  }
+
+  @Get(':id')
   findAllProductsByCategory(
     @Param('id') categroyId: number,
   ): Promise<Category[]> {

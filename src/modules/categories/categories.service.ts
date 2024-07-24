@@ -69,15 +69,15 @@ export class CategoriesService {
   async findCategoriesWithItsSubCategories(): Promise<Category[]> {
     return await this.categoryRepository.find({
       relations: ['subCategories'],
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        subCategories: {
-          id: true,
-          name: true,
-        },
+    });
+  }
+
+  async findCategoryWithItsSubCategories(id: number): Promise<Category> {
+    return await this.categoryRepository.findOne({
+      where: {
+        id: id,
       },
+      relations: ['subCategories'],
     });
   }
 
