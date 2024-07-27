@@ -16,6 +16,11 @@ export class SubCategory {
   @Column()
   name: string;
 
+  @Column({
+    default: true,
+  })
+  active: boolean;
+
   @ManyToOne(() => Category, (category) => category.subCategories)
   category: Category;
 

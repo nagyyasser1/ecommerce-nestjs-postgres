@@ -8,7 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
 import { SubCategory } from './entities/subCategory.entity';
-import { CreateSubcategoryDto } from './dto/create-subCategory.dto';
+import { CreateSubCategoryDto } from './dto/create-subcategory.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -49,7 +50,7 @@ export class CategoriesService {
   }
 
   async createSubCategory(
-    createSubcategoryDto: CreateSubcategoryDto,
+    createSubcategoryDto: CreateSubCategoryDto,
   ): Promise<SubCategory> {
     const category = await this.categoryRepository.findOneBy({
       id: createSubcategoryDto.categoryId,
@@ -126,5 +127,25 @@ export class CategoriesService {
 
   async findSubCategoryById(id: number): Promise<SubCategory> {
     return await this.subCategoryRepository.findOneBy({ id });
+  }
+
+  async updateCategory(id: number, updateCategory: UpdateCategoryDto) {
+    const category = await this.categoryRepository.findOneBy({ id });
+    if (!category) {
+      throw new NotFoundException(`category with id: ${id} not found!.`);
+    }
+
+    Object.assign(category, updateCategory);
+    return await this.categoryRepository.save(category);
+  }
+
+  async removeSubCategory(id: number) {
+    const category = this.findCategoryById(id);
+    if (!category) {
+      throw new NotFoundException(`category with id: ${id} not found!.`);
+    }
+    await this.categoryRepository.delete({
+      id,
+    });
   }
 }

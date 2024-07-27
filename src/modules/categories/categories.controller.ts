@@ -17,7 +17,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { AdminGuard } from 'src/common/guards/admin.guard';
 import { Category } from './entities/category.entity';
-import { CreateSubcategoryDto } from './dto/create-subCategory.dto';
+import { CreateSubCategoryDto } from './dto/create-subcategory.dto';
 import { SubCategory } from './entities/subCategory.entity';
 
 @ApiTags('category')
@@ -32,13 +32,6 @@ export class CategoriesController {
     @Body() createCategoryDto: CreateCategoryDto,
   ): Promise<Category> {
     return this.categoriesService.createCategory(createCategoryDto);
-  }
-
-  @Post('subCategory')
-  createSubCategory(
-    @Body() createSubCategoryDto: CreateSubcategoryDto,
-  ): Promise<SubCategory> {
-    return this.categoriesService.createSubCategory(createSubCategoryDto);
   }
 
   @Get()
@@ -71,5 +64,18 @@ export class CategoriesController {
       page,
       limit,
     );
+  }
+
+  @Patch(':id')
+  async updateCategory(
+    @Param('id') id: string,
+    @Body() data: UpdateCategoryDto,
+  ) {
+    return await this.categoriesService.updateCategory(+id, data);
+  }
+
+  @Delete(':id')
+  async deleteCategory(@Param('id') id: string) {
+    return await this.categoriesService.removeSubCategory(+id);
   }
 }

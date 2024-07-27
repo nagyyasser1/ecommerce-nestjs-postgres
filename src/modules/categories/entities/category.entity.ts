@@ -38,6 +38,11 @@ export class Category {
   })
   picUrl: string;
 
+  @Column({
+    default: true,
+  })
+  active: boolean;
+
   @OneToMany(() => SubCategory, (subCategory) => subCategory.category)
   subCategories: SubCategory[];
 
